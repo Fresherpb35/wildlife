@@ -3,10 +3,10 @@ import React, { useState } from 'react';
 import { eyebrowStyle, pageTitleStyle, labelStyle, inputStyle, goldBtnStyle, useBreakpoint } from '../utils/styles';
 
 const CONTACT_DETAILS = [
-  { icon: '📧', label: 'Email',   value: 'info@wildlifesafariindia.com' },
-  { icon: '📞', label: 'Phone',   value: '+91 8368868187'               },
-  { icon: '📞', label: 'Phone',   value: '+91 9229841090'               },
-  { icon: '📍', label: 'Address', value: 'Saidulajaib Saket, New Delhi 110017' },
+  { icon: '📧', label: 'Email',   value: 'info@wildlifesafariindia.com', href: 'mailto:info@wildlifesafariindia.com' },
+  { icon: '📞', label: 'Phone',   value: '+91 8368868187',               href: 'https://wa.me/918368868187'          },
+  { icon: '📞', label: 'Phone',   value: '+91 9229841090',               href: 'https://wa.me/919229841090'          },
+  { icon: '📍', label: 'Address', value: 'Saidulajaib Saket, New Delhi 110017', href: null                           },
 ];
 
 export default function ContactPage() {
@@ -20,6 +20,16 @@ export default function ContactPage() {
     e.preventDefault();
     setSent(true);
     setTimeout(() => setSent(false), 3000);
+  };
+
+  const clickableValueStyle = {
+    fontFamily: "'Cormorant Garamond', serif",
+    color: '#c8b89a',
+    fontSize: '1rem',
+    textDecoration: 'none',
+    transition: 'color 0.2s ease',
+    cursor: 'pointer',
+    display: 'inline-block',
   };
 
   return (
@@ -43,16 +53,30 @@ export default function ContactPage() {
             <h3 style={{ fontFamily: "'Playfair Display', serif", color: '#f5efe0', marginBottom: '1.5rem', fontSize: '1.2rem' }}>
               Our Details
             </h3>
-            {CONTACT_DETAILS.map(({ icon, label, value }, i) => (
+            {CONTACT_DETAILS.map(({ icon, label, value, href }, i) => (
               <div key={i} style={{ display: 'flex', gap: '1rem', marginBottom: '1.2rem', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: '1.2rem', marginTop: '2px' }}>{icon}</span>
                 <div>
                   <div style={{ fontFamily: "'Cormorant Garamond', serif", color: '#D4AF37', fontSize: '0.75rem', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '2px' }}>
                     {label}
                   </div>
-                  <div style={{ fontFamily: "'Cormorant Garamond', serif", color: '#c8b89a', fontSize: '1rem' }}>
-                    {value}
-                  </div>
+                  {href ? (
+                    /* FIXED: Added the missing <a> tag here */
+                    <a 
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={clickableValueStyle}
+                      onMouseEnter={e => e.currentTarget.style.color = '#D4AF37'}
+                      onMouseLeave={e => e.currentTarget.style.color = '#c8b89a'}
+                    >
+                      {value}
+                    </a>
+                  ) : (
+                    <div style={{ fontFamily: "'Cormorant Garamond', serif", color: '#c8b89a', fontSize: '1rem' }}>
+                      {value}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

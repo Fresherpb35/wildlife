@@ -148,4 +148,17 @@
     align-items: center;
     text-align: center;
   }
+
+  .footer__contact-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.footer__contact-link:hover {
+  opacity: 0.75;
+  text-decoration: underline;
+}
 }

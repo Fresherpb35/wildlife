@@ -10,8 +10,30 @@ const FOOTER_LINKS = [
   { label: 'Contact',        page: 'contact' },
 ];
 
+const CONTACT_ITEMS = [
+  {
+    label: '📧 info@wildlifesafariindia.com',
+    href: 'mailto:info@wildlifesafariindia.com',
+  },
+  {
+    label: '📞 +91 8368868187',
+    href: 'https://wa.me/918368868187',
+  },
+  {
+    label: '📞 +91 9229841090',
+    href: 'https://wa.me/919229841090',
+  },
+  {
+    label: '📍 New Delhi 110017',
+    href: null, // not clickable
+  },
+];
+
 export default function Footer({ navigate }) {
-  const go = (pg) => { navigate(pg); window.scrollTo(0, 0); };
+  const go = (pg) => { 
+    navigate(pg); 
+    window.scrollTo(0, 0); 
+  };
 
   return (
     <footer className="footer">
@@ -19,7 +41,7 @@ export default function Footer({ navigate }) {
 
         {/* Brand */}
         <div>
-          <div className="footer__brand-logo" onClick={() => go('home')}>
+          <div className="footer__brand-logo" onClick={() => go('home')} style={{ cursor: 'pointer' }}>
             <span className="footer__brand-logo-icon">🐯</span>
             <div>
               <div className="footer__brand-name">WILDLIFE</div>
@@ -46,14 +68,23 @@ export default function Footer({ navigate }) {
         {/* Contact */}
         <div>
           <h4 className="footer__contact-heading">Contact</h4>
-          {[
-            '📧 info@wildlifesafariindia.com',
-            '📞 +91 8368868187',
-            '📞 +91 9229841090',
-            '📍 New Delhi 110017',
-          ].map(line => (
-            <p key={line} className="footer__contact-line">{line}</p>
-          ))}
+          {CONTACT_ITEMS.map(({ label, href }) =>
+            href ? (
+              /* FIXED: Added the missing 'a' tag here */
+              <a 
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer__contact-line footer__contact-link"
+                style={{ display: 'block' }} 
+              >
+                {label}
+              </a>
+            ) : (
+              <p key={label} className="footer__contact-line">{label}</p>
+            )
+          )}
         </div>
       </div>
 

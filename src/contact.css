@@ -1,0 +1,124 @@
+/* ─── CONTACT PAGE STYLES ────────────────────────────────────────────────────── */
+
+.contact {
+  min-height: 100vh;
+  background: #0a0a08;
+  padding-top: 90px;
+}
+
+.contact__inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.contact__grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 4rem;
+  margin-top: 3rem;
+  align-items: start;
+}
+
+/* Details column */
+.contact__details-title {
+  font-family: 'Playfair Display', serif;
+  color: #f5efe0;
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+}
+
+.contact__detail {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+  align-items: flex-start;
+}
+
+.contact__detail-icon  { font-size: 1.2rem; margin-top: 2px; flex-shrink: 0; }
+
+.contact__detail-label {
+  font-family: 'Cormorant Garamond', serif;
+  color: #D4AF37;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.contact__detail-value {
+  font-family: 'Cormorant Garamond', serif;
+  color: #c8b89a;
+  font-size: 1rem;
+}
+
+.contact__detail-link {
+  font-family: 'Cormorant Garamond', serif;
+  color: #c8b89a;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.contact__detail-link:hover { color: #D4AF37; }
+
+.contact__note {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba(212,175,55,0.05);
+  border: 1px solid rgba(212,175,55,0.12);
+  border-radius: 12px;
+}
+
+.contact__note-text         { font-family: 'Cormorant Garamond', serif; color: #a89060; font-size: 0.85rem; line-height: 1.8; }
+.contact__note-text strong  { color: #D4AF37; }
+
+/* Form column */
+.contact__form-title {
+  font-family: 'Playfair Display', serif;
+  color: #f5efe0;
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+}
+
+.contact__field        { margin-bottom: 1.2rem; }
+
+/* Status banners */
+.contact__banner {
+  padding: 0.9rem 1.2rem;
+  border-radius: 8px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  margin-bottom: 1.2rem;
+}
+.contact__banner--success { background: rgba(111,207,151,0.1); border: 1px solid rgba(111,207,151,0.3); color: #6fcf97; }
+.contact__banner--error   { background: rgba(229,115,115,0.1); border: 1px solid rgba(229,115,115,0.3); color: #e57373; }
+
+/* Field error state */
+.contact__field--error .form-input,
+.contact__field--error .form-textarea {
+  border-color: rgba(229,115,115,0.5);
+}
+.contact__field-error-msg {
+  display: block;
+  font-family: 'Cormorant Garamond', serif;
+  color: #e57373;
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+/* Submit */
+.contact__submit {
+  width: 100%;
+  justify-content: center;
+  padding: 0.9rem;
+  border-radius: 8px;
+}
+.contact__submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .contact__grid { grid-template-columns: 1fr; gap: 2.5rem; }
+}
+@media (max-width: 480px) {
+  .contact__inner { padding: 2rem 1rem; }
+}

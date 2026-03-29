@@ -27,7 +27,17 @@ export default function Hero({ navigate }) {
         padding: '0 clamp(1rem, 5vw, 2rem)',
         maxWidth: '780px', width: '100%',
       }}>
-        <p style={{ ...eyebrowStyle, color: '#D4AF37' ,fontSize: '0.9rem' , fontWeight: 1000, }}>— Ranthambore National Park —</p>
+        <p
+  style={{
+    ...eyebrowStyle,
+    color: '#D4AF37',
+    fontSize: '2.5rem',   // increased size
+    fontWeight: 900,      // extra bold
+    letterSpacing: '2px', // makes it look bigger visually
+  }}
+>
+  — Ranthambore National Park —
+</p>
         <h1 style={{
   fontFamily: "'Playfair Display', serif",
   fontSize: 'clamp(2.4rem, 8vw, 6rem)',

@@ -16,8 +16,8 @@ const CONTACT_ITEMS = [
     href: 'mailto:info@wildlifesafariindia.com',
   },
   {
-    label: '📞 +91 8368868187',
-    href: 'https://wa.me/918368868187',
+    label: '📞 +91 9815585834',
+    href: 'https://wa.me/9815585834',
   },
   {
     label: '📞 +91 9229841090',

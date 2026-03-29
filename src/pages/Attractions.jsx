@@ -6,9 +6,10 @@ import '../attractions.css';
 // ── Local images (place these files in your /public/images/ or /src/assets/ folder) ──
 import imgSafari from '../assets/leesa-charlotte-qWeDY3isTUY-unsplash (1).jpg';
 import imgFort  from '../assets/istockphoto-1445341348-612x612.jpg';
+import imgChambal from '../assets/chambal.jpeg'
 import imgKachida from '../assets/gettyimages-1957671515-612x612.jpg';
-import imgPadam from '../assets/Banner4 (1).jpg';
-import imgJogi from '../assets/istockphoto-1445341348-612x612.jpg';
+import imgPadam from '../assets/padam-talao.jpeg';
+import imgJogi from '../assets/jogi-mahal.jpeg';
 import imgGanesh from '../assets/istockphoto-1727264460-612x612.jpg';
 
 const ATTRACTIONS = [
@@ -20,6 +21,11 @@ const ATTRACTIONS = [
   {
     title: 'Ranthambore Fort',
     img: imgFort,
+    desc: 'Explore the 10th-century UNESCO-listed fort, a symbol of imperial heritage and breathtaking views.',
+  },
+   {
+    title: 'Chambal Safari',
+    img: imgChambal,
     desc: 'Explore the 10th-century UNESCO-listed fort, a symbol of imperial heritage and breathtaking views.',
   },
   {
@@ -127,3 +133,5 @@ export default function Attractions() {
     </section>
   );
 }
+
+

@@ -1,5 +1,5 @@
 // src/api/client.js
-const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const BASE_URL = process.env.REACT_APP_API_URL + '/api' || 'http://localhost:5000/api';
 
 export function getToken()      { return localStorage.getItem('safari_admin_token'); }
 export function setToken(token)     { localStorage.setItem('safari_admin_token', token); }

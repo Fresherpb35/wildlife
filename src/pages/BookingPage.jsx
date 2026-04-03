@@ -1,5 +1,7 @@
+// ─── PAGE: BOOKING (API-integrated) ──────────────────────────────────────────
 import React, { useState } from 'react';
 import { useBreakpoint } from '../utils/styles';
+import { submitBooking } from '../api/bookingApi';
 import '../booking.css';
 
 const WHATSAPP_NUMBER = '918368868187';
@@ -8,181 +10,218 @@ export default function BookingPage() {
   const { isMobile } = useBreakpoint();
 
   const [form, setForm] = useState({
-    name: '',
-    date: '',
-    type: 'Gypsy',
-    zone: 'Zone 1',
-    time: 'Morning',
-    email: '',
-    phone: '',
+    name: '', date: '', type: 'Gypsy',
+    zone: 'Zone 1', time: 'Morning', email: '', phone: '',
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status,   setStatus]   = useState('idle');   // idle | loading | success | error
+  const [errorMsg, setErrorMsg] = useState('');
+  const [bookingId, setBookingId] = useState('');
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handle = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  // Open WhatsApp directly with form data
-  const openWhatsApp = () => {
-    if (!form.name || !form.date || !form.email) {
-      alert('Please fill Name, Date and Email');
-      return false;
-    }
-
-    const message = `🌿 *Safari Booking Request — Wildlife Safari India*
-
-👤 Name: ${form.name}
-📧 Email: ${form.email}
-📞 Phone: ${form.phone || 'N/A'}
-📅 Date: ${form.date}
-🚙 Type: ${form.type}
-📍 Zone: ${form.zone}
-🕐 Time: ${form.time}
-
-_Sent via Wildlife Safari India Website_`;
-
-    const isMobileDevice = /iPhone|Android|iPad/i.test(navigator.userAgent);
-
-    const url = isMobileDevice
-      ? `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(message)}`
-      : `https://web.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(message)}`;
-
-    window.open(url, '_blank');
-    return true;
-  };
-
-  const handleSubmit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    setStatus('loading');
+    setErrorMsg('');
 
-    const success = openWhatsApp();
+    try {
+      const res = await submitBooking(form);
 
-    if (success) {
-      setTimeout(() => {
-        setForm({
-          name: '',
-          date: '',
-          type: 'Gypsy',
-          zone: 'Zone 1',
-          time: 'Morning',
-          email: '',
-          phone: '',
-        });
-        setIsSubmitting(false);
-      }, 800);
-    } else {
-      setIsSubmitting(false);
+      // Support both { data: { id } } and { id } response shapes
+      const id = res?.data?.id || res?.id || '';
+      setBookingId(id);
+      setStatus('success');
+
+    } catch (err) {
+      setStatus('error');
+
+      // ── Decode error from client.js error shape ──────────────────────────
+      if (err.errors?.length) {
+        // Array of validation errors e.g. [{ message: "Invalid date" }]
+        setErrorMsg(
+          err.errors.map(e => (typeof e === 'string' ? e : e.message)).join(', ')
+        );
+      } else if (err.data?.message) {
+        setErrorMsg(err.data.message);
+      } else {
+        setErrorMsg(err.message || 'Something went wrong. Please try again.');
+      }
     }
   };
 
-  // Integrated Fields Configuration
-  const fields = [
-    // Text Inputs
-    { label: 'Full Name', name: 'name', type: 'text', required: true },
-    { label: 'Safari Date', name: 'date', type: 'date', required: true },
-    { label: 'Email', name: 'email', type: 'email', required: true },
-    { label: 'Phone Number', name: 'phone', type: 'tel', required: false },
+  // ── WhatsApp fallback ─────────────────────────────────────────────────────
+  const openWhatsApp = () => {
+    const text = [
+      `🌿 *Safari Booking Request — Wildlife Safari India*`,
+      ``,
+      `👤 *Name:* ${form.name}`,
+      `📧 *Email:* ${form.email}`,
+      `📞 *Phone:* ${form.phone || 'N/A'}`,
+      `📅 *Date:* ${form.date}`,
+      `🚙 *Type:* ${form.type}`,
+      `📍 *Zone:* ${form.zone}`,
+      `🕐 *Time:* ${form.time}`,
+      ``,
+      `_Sent via wildlifesafariindia.com_`,
+    ].join('\n');
+    window.open(
+      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`,
+      '_blank', 'noopener,noreferrer'
+    );
+  };
 
-    // Dropdowns
-    {
-      label: 'Safari Type',
-      name: 'type',
-      type: 'select',
-      options: ['Gypsy', 'Canter'],
-    },
-    {
-      label: 'Safari Zone',
-      name: 'zone',
-      type: 'select',
-      options: Array.from({ length: 10 }, (_, i) => `Zone ${i + 1}`),
-    },
-    {
-      label: 'Safari Time',
-      name: 'time',
-      type: 'select',
-      options: ['Morning', 'Evening'],
-    },
-  ];
+  // ── Success Screen ────────────────────────────────────────────────────────
+  if (status === 'success') {
+    return (
+      <div className="booking">
+        <div className="booking__inner" style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🐯</div>
+          <p className="booking__eyebrow">Request Submitted</p>
+          <h1 className="booking__title">Booking <em>Confirmed!</em></h1>
+          <p style={{ fontFamily: "'Cormorant Garamond', serif", color: '#c8b89a', fontSize: '1.1rem', lineHeight: 1.8 }}>
+            Thank you, <strong style={{ color: '#D4AF37' }}>{form.name}</strong>.
+            Your safari request has been received.
+          </p>
+          {bookingId && (
+            <p style={{
+              fontFamily: 'monospace',
+              background: 'rgba(212,175,55,0.08)',
+              border: '1px solid rgba(212,175,55,0.2)',
+              borderRadius: '8px', padding: '0.75rem 1.5rem',
+              display: 'inline-block', color: '#D4AF37',
+              fontSize: '0.9rem', marginTop: '0.75rem',
+            }}>
+              Booking ID: {bookingId}
+            </p>
+          )}
+          <p style={{ fontFamily: "'Cormorant Garamond', serif", color: '#a89060', fontSize: '0.95rem', marginTop: '1.5rem' }}>
+            A confirmation has been sent to <strong>{form.email}</strong>.<br />
+            Our team will contact you within 24 hours.
+          </p>
+          <button
+            onClick={() => {
+              setStatus('idle');
+              setForm({ name: '', date: '', type: 'Gypsy', zone: 'Zone 1', time: 'Morning', email: '', phone: '' });
+            }}
+            style={{
+              marginTop: '1.5rem', padding: '0.7rem 1.8rem',
+              background: 'transparent', border: '1px solid rgba(212,175,55,0.3)',
+              borderRadius: '8px', color: '#D4AF37', cursor: 'pointer',
+              fontFamily: "'Cormorant Garamond', serif", fontSize: '1rem',
+            }}
+          >
+            Make Another Booking
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="booking">
       <div className="booking__inner">
+
         <p className="booking__eyebrow">Reserve Your Spot</p>
-        <h1 className="booking__title">
-          Book a <em>Safari</em>
-        </h1>
+        <h1 className="booking__title">Book a <em>Safari</em></h1>
 
-        <form onSubmit={handleSubmit} className="booking__form">
-          <div
-            className={`booking__grid${
-              isMobile ? ' booking__grid--mobile' : ''
-            }`}
-          >
-            {/* Single Integrated Map for all fields */}
-            {fields.map((field) => (
-              <div key={field.name} className="booking__field">
-                <label className="booking__label">{field.label}</label>
+        {/* ── Error Banner ── */}
+        {status === 'error' && (
+          <div style={{
+            background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.25)',
+            borderRadius: '8px', padding: '1rem 1.25rem', marginBottom: '1.5rem',
+            fontFamily: "'Cormorant Garamond', serif", color: '#fca5a5', fontSize: '1rem',
+            display: 'flex', alignItems: 'flex-start', gap: '0.6rem',
+          }}>
+            <span style={{ flexShrink: 0 }}>⚠️</span>
+            <div>
+              <div>{errorMsg}</div>
+              <button
+                onClick={openWhatsApp}
+                style={{
+                  marginTop: '0.5rem', background: 'none', border: 'none',
+                  color: '#4ade80', cursor: 'pointer', padding: 0,
+                  fontFamily: "'Cormorant Garamond', serif", fontSize: '0.9rem',
+                  textDecoration: 'underline',
+                }}
+              >
+                Book via WhatsApp instead →
+              </button>
+            </div>
+          </div>
+        )}
 
-                {field.type === 'select' ? (
-                  // Dropdown Field
-                  <select
-                    name={field.name}
-                    value={form[field.name]}
-                    onChange={handleChange}
-                    className="booking__select"
-                    disabled={isSubmitting}
-                  >
-                    {field.options.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  // Input Field
-                  <input
-                    name={field.name}
-                    type={field.type}
-                    value={form[field.name]}
-                    onChange={handleChange}
-                    required={field.required}
-                    className="booking__input"
-                    disabled={isSubmitting}
-                  />
-                )}
+        <form onSubmit={submit} className="booking__form">
+          <div className={`booking__grid${isMobile ? ' booking__grid--mobile' : ''}`}>
+
+            {/* Text & Date Inputs */}
+            {[
+              { label: 'Full Name',    name: 'name',  type: 'text',  placeholder: 'Your Name'       },
+              { label: 'Safari Date',  name: 'date',  type: 'date'                                  },
+              { label: 'Email',        name: 'email', type: 'email', placeholder: 'your@email.com'  },
+              { label: 'Phone Number', name: 'phone', type: 'text',  placeholder: '+91 XXXXX XXXXX' },
+            ].map(f => (
+              <div key={f.name} className="booking__field">
+                <label className="booking__label">{f.label}</label>
+                <input
+                  name={f.name} type={f.type} value={form[f.name]}
+                  onChange={handle} placeholder={f.placeholder}
+                  required={['name', 'date', 'email'].includes(f.name)}
+                  disabled={status === 'loading'}
+                  className="booking__input"
+                />
+              </div>
+            ))}
+
+            {/* Select Dropdowns */}
+            {[
+              { label: 'Safari Type', name: 'type', opts: ['Gypsy', 'Canter'] },
+              { label: 'Safari Zone', name: 'zone', opts: [1,2,3,4,5,6,7,8,9,10].map(z => `Zone ${z}`) },
+              { label: 'Safari Time', name: 'time', opts: ['Morning', 'Evening'] },
+            ].map(s => (
+              <div key={s.name} className="booking__field">
+                <label className="booking__label">{s.label}</label>
+                <select
+                  name={s.name} value={form[s.name]} onChange={handle}
+                  disabled={status === 'loading'}
+                  className="booking__select"
+                >
+                  {s.opts.map(o => <option key={o}>{o}</option>)}
+                </select>
               </div>
             ))}
           </div>
 
           <button
             type="submit"
+            disabled={status === 'loading'}
             className="booking__submit-btn"
-            disabled={isSubmitting}
+            style={{ opacity: status === 'loading' ? 0.7 : 1 }}
           >
-            {isSubmitting ? 'Opening WhatsApp...' : 'Submit Booking Request'}
+            {status === 'loading' ? '⏳ Submitting…' : 'Submit Booking Request'}
           </button>
 
-          <p style={{ textAlign: 'center', marginTop: '0.75rem' }}>
-            Prefer direct booking?{' '}
+          {/* WhatsApp alternative */}
+          <p style={{
+            textAlign: 'center', marginTop: '0.75rem',
+            fontFamily: "'Cormorant Garamond', serif", color: '#6b5f4a', fontSize: '0.85rem',
+          }}>
+            Prefer to book directly?{' '}
             <button
               type="button"
               onClick={openWhatsApp}
               style={{
-                background: 'none',
-                border: 'none',
-                color: '#25D366',
-                cursor: 'pointer',
+                background: 'none', border: 'none', padding: 0,
+                color: '#4ade80', cursor: 'pointer',
+                fontFamily: "'Cormorant Garamond', serif", fontSize: '0.85rem',
                 textDecoration: 'underline',
               }}
-              disabled={isSubmitting}
             >
               Send via WhatsApp
             </button>
           </p>
-        </form>
-        
- {/* Google Map Section — unchanged */}
+
+          {/* Google Map Section — unchanged */}
           <div className="booking__location">
             <p className="booking__location-eyebrow">Find Us</p>
             <p className="booking__location-desc">
@@ -219,6 +258,7 @@ _Sent via Wildlife Safari India Website_`;
               </div>
             </div>
           </div>
+        </form>
       </div>
     </div>
   );

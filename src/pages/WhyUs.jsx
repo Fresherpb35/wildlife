@@ -3,7 +3,7 @@ import React from 'react';
 import { eyebrowStyle, sectionTitleStyle, goldBtnStyle, useBreakpoint } from '../utils/styles';
 
 const FEATURES = [
-  { icon: '🦁', title: 'gypsy & Canter Safaris',  desc: "Exclusive wildlife safaris for an up-close encounter with Ranthambore's majestic tigers." },
+  { icon: '🦁', title: 'Gypsy & Canter Safaris',  desc: "Exclusive wildlife safaris for an up-close encounter with Ranthambore's majestic tigers." },
   { icon: '🧭', title: 'Expert Local Guides',     desc: 'Knowledgeable guides enrich your experience with fascinating wildlife insights.'           },
   { icon: '💰', title: 'Affordable Pricing',      desc: 'Competitive rates with zero compromise on service quality or experience.'                   },
   { icon: '📱', title: 'Easy Online Booking',     desc: 'Convenient and secure booking process for all your trips and stays.'                        },

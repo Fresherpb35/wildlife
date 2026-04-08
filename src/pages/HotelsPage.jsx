@@ -40,30 +40,30 @@ export default function HotelsPage({ navigate }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchHotels = async () => {
-      try {
-        const res = await fetch('http://localhost:5000/api/hotels');
-        
-        if (!res.ok) {
-          throw new Error('Failed to fetch hotels');
-        }
-
-        const result = await res.json();
-
-        if (result.success && Array.isArray(result.data)) {
-          setDbHotels(result.data);
-        }
-      } catch (err) {
-        console.log("Could not fetch dynamic hotels from backend:", err);
-        setError("Additional hotels could not be loaded");
-      } finally {
-        setLoading(false);        // ← Yeh hamesha chalna chahiye
+useEffect(() => {
+  const fetchHotels = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/hotels`);
+      
+      if (!res.ok) {
+        throw new Error('Failed to fetch hotels');
       }
-    };
 
-    fetchHotels();
-  }, []);
+      const result = await res.json();
+
+      if (result.success && Array.isArray(result.data)) {
+        setDbHotels(result.data);
+      }
+    } catch (err) {
+      console.log("Could not fetch dynamic hotels from backend:", err);
+      setError("Additional hotels could not be loaded");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchHotels();
+}, []);
 
   // Combine Default + Database hotels
   const allHotels = [...DEFAULT_HOTELS, ...dbHotels];

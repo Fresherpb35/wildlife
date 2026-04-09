@@ -41,25 +41,31 @@ export default function HotelsPage({ navigate }) {
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/hotels`);
-        if (!res.ok) throw new Error('Failed to fetch hotels');
+        // ✅ Fix: Manual fallback agar .env load na ho
+        const baseUrl = import.meta.env.VITE_API_URL || 'https://wildsafari-backend.onrender.com';
+        const res = await fetch(`${baseUrl}/api/hotels`);
+        
+        // Response check karein
+        const contentType = res.headers.get("content-type");
+        if (!res.ok || !contentType || !contentType.includes("application/json")) {
+          throw new Error("Invalid Response: Backend sent HTML instead of JSON");
+        }
 
         const result = await res.json();
 
         if (result.success && Array.isArray(result.data)) {
-          // 🔥 MAPPING: Backend fields ko frontend format mein convert kar rhe hain
           const mappedData = result.data.map(h => ({
             id: h.id || h._id,
             name: h.name,
-            img: h.image || h.img || 'https://via.placeholder.com/700x450?text=Hotel+Image', 
+            img: h.image || h.img || 'https://via.placeholder.com/700x450?text=Hotel', 
             tag: h.tag || 'Luxury',
-            desc: h.description || h.desc || 'Experience the comfort of our premium safari stay.',
+            desc: h.description || h.desc || 'Premium safari stay experience.',
           }));
           setDbHotels(mappedData);
         }
       } catch (err) {
-        console.error("Fetch Error:", err);
-        setError("Additional hotels could not be loaded");
+        console.error("Fetch Error:", err.message);
+        setError("Database hotels could not be loaded at this moment.");
       } finally {
         setLoading(false);
       }
@@ -67,7 +73,6 @@ export default function HotelsPage({ navigate }) {
     fetchHotels();
   }, []);
 
-  // ✅ STATIC + DYNAMIC Hotels combine ho rhe hain yahan
   const allHotels = [...DEFAULT_HOTELS, ...dbHotels];
 
   if (loading) {
@@ -107,8 +112,6 @@ export default function HotelsPage({ navigate }) {
                   src={h.img} 
                   alt={h.name}
                   style={{ width: '100%', height: '100%', objectFit: 'cover', transition: '0.4s' }}
-                  onMouseOver={e => (e.target.style.transform = 'scale(1.05)')}
-                  onMouseOut={e => (e.target.style.transform = 'scale(1)')}
                 />
                 <span style={{
                   position: 'absolute', top: '1rem', right: '1rem',
@@ -140,7 +143,7 @@ export default function HotelsPage({ navigate }) {
           ))}
         </div>
 
-        {error && <p style={{ color: '#e07a5f', textAlign: 'center', marginTop: '2rem' }}>{error}</p>}
+        {error && <p style={{ color: '#a89060', textAlign: 'center', marginTop: '2rem', fontSize: '0.8rem' }}>{error}</p>}
       </div>
     </div>
   );

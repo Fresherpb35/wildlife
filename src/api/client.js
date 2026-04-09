@@ -1,10 +1,16 @@
 // src/api/client.js
 
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+// src/api/client.js
+const API_URL = import.meta.env.VITE_API_URL;
 
-// 2. URL ko saaf karein taaki slash ka issue na ho
-const BASE_URL = `${API_URL.replace(/\/$/, '')}/api`;
+// Agar variable missing hai toh console mein saaf dikhega
+if (!API_URL) {
+  console.error("❌ CRITICAL: VITE_API_URL is undefined in this build!");
+}
+
+const BASE_URL = `${(API_URL || '').replace(/\/$/, '')}/api`;
+
 
 console.log("🚀 Running API on:", BASE_URL); 
 

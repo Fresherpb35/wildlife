@@ -1,6 +1,12 @@
-// Vite ke liye sahi tarika
+// src/api/client.js
+
+
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+// 2. URL ko saaf karein taaki slash ka issue na ho
 const BASE_URL = `${API_URL.replace(/\/$/, '')}/api`;
+
+console.log("🚀 Running API on:", BASE_URL); 
 
 export function getToken()      { return localStorage.getItem('safari_admin_token'); }
 export function setToken(token)     { localStorage.setItem('safari_admin_token', token); }
@@ -19,7 +25,7 @@ async function request(method, path, body = null, options = {}) {
 
   if (body) config.body = JSON.stringify(body);
 
-  // path yahan "/bookings" jaisa hoga, isliye BASE_URL + path sahi chalega
+  // path yahan "/bookings" jaisa hoga
   const response = await fetch(`${BASE_URL}${path}`, config);
   
   let data = {};
@@ -33,6 +39,7 @@ async function request(method, path, body = null, options = {}) {
     const err = new Error(errorMsg);
     err.status = response.status;
     err.data = data; 
+    err.errors = data.errors || (data.error ? [data.error] : null);
     err.response = { data, status: response.status }; 
     throw err;
   }

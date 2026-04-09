@@ -1,5 +1,6 @@
-// src/api/client.js
-const BASE_URL = process.env.REACT_APP_API_URL + '/api' || 'http://localhost:5000/api';
+// Vite ke liye sahi tarika
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const BASE_URL = `${API_URL.replace(/\/$/, '')}/api`;
 
 export function getToken()      { return localStorage.getItem('safari_admin_token'); }
 export function setToken(token)     { localStorage.setItem('safari_admin_token', token); }
@@ -18,32 +19,21 @@ async function request(method, path, body = null, options = {}) {
 
   if (body) config.body = JSON.stringify(body);
 
+  // path yahan "/bookings" jaisa hoga, isliye BASE_URL + path sahi chalega
   const response = await fetch(`${BASE_URL}${path}`, config);
   
-  // 1. Safely parse JSON
   let data = {};
   const contentType = response.headers.get("content-type");
   if (contentType && contentType.includes("application/json")) {
     data = await response.json();
   }
 
-  // 2. Handle Errors (like 422)
   if (!response.ok) {
-    // Create the error object
     const errorMsg = data.message || 'Validation failed';
     const err = new Error(errorMsg);
-    
-    // Attach status and data so BookingPage.jsx catch block can see it
     err.status = response.status;
     err.data = data; 
-    
-    // Specifically extract the 'errors' array if it exists (for 422 errors)
-    // This allows you to do: err.errors[0].message
-    err.errors = data.errors || (data.error ? [data.error] : null);
-    
-    // Keep this for Axios compatibility if needed
     err.response = { data, status: response.status }; 
-    
     throw err;
   }
 

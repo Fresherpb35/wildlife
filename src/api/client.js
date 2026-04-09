@@ -1,18 +1,12 @@
-// src/api/client.js
+// Fallback local host par tabhi jaye jab hum production par na hon
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '');
 
-
-// src/api/client.js
-const API_URL = import.meta.env.VITE_API_URL;
-
-// Agar variable missing hai toh console mein saaf dikhega
-if (!API_URL) {
-  console.error("❌ CRITICAL: VITE_API_URL is undefined in this build!");
+if (!API_URL && !import.meta.env.DEV) {
+  console.error("❌ ERROR: VITE_API_URL is not defined in Production!");
 }
 
-const BASE_URL = `${(API_URL || '').replace(/\/$/, '')}/api`;
-
-
-console.log("🚀 Running API on:", BASE_URL); 
+const BASE_URL = `${API_URL.replace(/\/$/, '')}/api`;
+console.log("🚀 Final Base URL:", BASE_URL);
 
 export function getToken()      { return localStorage.getItem('safari_admin_token'); }
 export function setToken(token)     { localStorage.setItem('safari_admin_token', token); }
